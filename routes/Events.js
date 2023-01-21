@@ -21,19 +21,20 @@ Router.get('/getAllEvents',async (req,res)=>
 //postingEvents
 Router.post('/PostEvent',fetchuser,[
     body('EventName', 'Enter a valid EventName').isLength({ min: 1 }),
-    body('Description', 'Description must be atleast 20 characters').isLength({ min: 20 }),
-    body('ParticipantsNumber', 'Description must be atleast 5 characters').isNumeric({min:1})
+    body('desc', 'Description must be atleast 20 characters').isLength({ min: 2 }),
+    body('np', 'Participants must be a numeric value').isNumeric(),
+    body('npremaining', 'participants remaning must be a numeric value').isNumeric()
 ],
 async(req,res)=>{
     try {
-        const{EventName,Desc,ParticipantNumber}=req.body;
+        const{CreatorID,EventName,desc,np,npremaining}=req.body;
         // If there are errors, return Bad request and the errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
         const Event = new Events({
-            EventName, Desc, ParticipantNumber
+            EventName, desc, np,npremaining,CreatorID
         })
         const savedEvent = await Event.save()
         res.json(savedEvent);

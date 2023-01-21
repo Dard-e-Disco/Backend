@@ -10,7 +10,7 @@ const EventSchema = new Schema({
         type: Number, required: true
     },
     UserRequested:[{
-        UserID:{type:Schema.Types.ObjectId, ref: "user"},
+        UserID:{type:Schema.Types.ObjectId, ref:"user"},
     }]
 
 })

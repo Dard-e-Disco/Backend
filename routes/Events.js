@@ -52,9 +52,9 @@ Router.post(
       });
       const savedEvent = await Event.save();
       res.json({
-        code:0,
-        message:"Event is successfully posted",
-        result:savedEvent
+        code: 0,
+        message: "Event is successfully posted",
+        result: savedEvent
       });
     } catch (error) {
       res.status(500).send("Internal Server Error");
@@ -82,31 +82,37 @@ Router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const event = await Events.findById(EventID);
-      if(event.CreatorID.toString()===UserID){
+      if (event.CreatorID.toString() !== UserID) {
         if (event.npremaining) {
-            const newuserreq = event.UserRequested.filter((ele) => {
-              return ele.UserID.toString() === UserID;
+          const newuserreq = event.UserRequested.filter((ele) => {
+            return ele.UserID.toString() === UserID;
+          });
+          console.log(newuserreq);
+          if (newuserreq.length === 0) {
+            event.UserRequested.push({
+              UserID,
             });
-            console.log(newuserreq);
-            if (newuserreq.length === 0) {
-              event.UserRequested.push({
-                UserID,
-              });
-              const savedEvent = await event.save();
-              res.send(savedEvent);
-            } else {
-              res.status(404).json({
-                code: 1,
-                message: "User already exists in the database",
-              });
-            }
+            const savedEvent = await event.save();
+            res.send(savedEvent);
           } else {
-            res.status(201).json({
-              code: 2,
-              message:
-                "Maximum number of participants is already reached for this event",
+            res.status(404).json({
+              code: 1,
+              message: "User already exists in the database",
             });
-          } 
+          }
+        } else {
+          res.status(201).json({
+            code: 2,
+            message:
+              "Maximum number of participants is already reached for this event",
+          });
+        }
+      } else {
+        res.status(201).json({
+          code: 3,
+          message:
+            "User is Creator",
+        });
       }
     } catch (error) {
       res.status(500).send("Internal Server Error");
@@ -134,63 +140,63 @@ Router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const event = await Events.findById(EventID);
-      if(event.npremaining>0){
+      if (event.npremaining > 0) {
         if (Response) {
-            const newuserreq = event.UserAccepted.filter((ele) => {
+          const newuserreq = event.UserAccepted.filter((ele) => {
+            return ele.UserID.toString() === UserID;
+          });
+          if (newuserreq.length === 0) {
+            event.UserAccepted.push({
+              UserID,
+            });
+            event.npremaining = event.npremaining - 1;
+            const savedEvent = await event.save();
+            const newuserreq = event.UserRequested.filter((ele) => {
               return ele.UserID.toString() === UserID;
             });
-            if (newuserreq.length === 0) {
-              event.UserAccepted.push({
-                UserID,
+            if (newuserreq.length !== 0) {
+              event.UserRequested = event.UserRequested.filter((ele) => {
+                return ele.UserID.toString() !== UserID;
               });
-              event.npremaining = event.npremaining - 1;
               const savedEvent = await event.save();
-              const newuserreq = event.UserRequested.filter((ele) => {
-                return ele.UserID.toString() === UserID;
-              });
-              if (newuserreq.length !== 0) {
-                event.UserRequested = event.UserRequested.filter((ele) => {
-                  return ele.UserID.toString() !== UserID;
-                });
-                const savedEvent = await event.save();
-              }
-              res.json({
-                code: 0,
-                message: "The user is accpeted for the given Event",
-                result: savedEvent,
-              });
-            } else {
-                const newuserreq = event.UserRequested.filter((ele) => {
-                    return ele.UserID.toString() === UserID;
-                  });
-                  if (newuserreq.length !== 0) {
-                    event.UserRequested = event.UserRequested.filter((ele) => {
-                      return ele.UserID.toString() !== UserID;
-                    });
-                    const savedEvent = await event.save();
-                  }
-              res.status(404).json({
-                code: 1,
-                message: "The user is already accepted for the given event",
-              });
             }
+            res.json({
+              code: 0,
+              message: "The user is accpeted for the given Event",
+              result: savedEvent,
+            });
           } else {
             const newuserreq = event.UserRequested.filter((ele) => {
-                return ele.UserID.toString() === UserID;
+              return ele.UserID.toString() === UserID;
+            });
+            if (newuserreq.length !== 0) {
+              event.UserRequested = event.UserRequested.filter((ele) => {
+                return ele.UserID.toString() !== UserID;
               });
-              if (newuserreq.length !== 0) {
-                event.UserRequested = event.UserRequested.filter((ele) => {
-                  return ele.UserID.toString() !== UserID;
-                });
-                const savedEvent = await event.save();
-              }
+              const savedEvent = await event.save();
+            }
             res.status(404).json({
               code: 1,
-              message: "User the rejected for the given event",
+              message: "The user is already accepted for the given event",
             });
           }
+        } else {
+          const newuserreq = event.UserRequested.filter((ele) => {
+            return ele.UserID.toString() === UserID;
+          });
+          if (newuserreq.length !== 0) {
+            event.UserRequested = event.UserRequested.filter((ele) => {
+              return ele.UserID.toString() !== UserID;
+            });
+            const savedEvent = await event.save();
+          }
+          res.status(404).json({
+            code: 1,
+            message: "User the rejected for the given event",
+          });
+        }
       }
-      
+
     } catch (error) {
       console.log(error);
       res.status(500).send("Internal Server Error");

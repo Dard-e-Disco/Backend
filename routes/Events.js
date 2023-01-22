@@ -132,32 +132,34 @@ Router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const event = await Events.findById(EventID);
-      if (Response) {
-        const newuserreq = event.UserAccepted.filter((ele) => {
-          return ele.UserID.toString() === UserID;
-        });
-        if (newuserreq.length === 0) {
-          event.UserAccepted.push({
-            UserID,
-          });
-          event.npremaining = event.npremaining - 1;
-          const savedEvent = await event.save();
-          res.json({
-            code: 0,
-            message: "The user is accpeted for the given Event",
-            result: savedEvent,
-          });
-        } else {
-          res.status(404).json({
-            code: 1,
-            message: "The user is already accepted for the given event",
-          });
-        }
-      } else {
-        res.status(404).json({
-          code: 1,
-          message: "User the rejected for the given event",
-        });
+      if(event.npremaining>0){
+        if (Response) {
+            const newuserreq = event.UserAccepted.filter((ele) => {
+              return ele.UserID.toString() === UserID;
+            });
+            if (newuserreq.length === 0) {
+              event.UserAccepted.push({
+                UserID,
+              });
+              event.npremaining = event.npremaining - 1;
+              const savedEvent = await event.save();
+              res.json({
+                code: 0,
+                message: "The user is accpeted for the given Event",
+                result: savedEvent,
+              });
+            } else {
+              res.status(404).json({
+                code: 1,
+                message: "The user is already accepted for the given event",
+              });
+            }
+          } else {
+            res.status(404).json({
+              code: 1,
+              message: "User the rejected for the given event",
+            });
+          }
       }
       const newuserreq = event.UserRequested.filter((ele) => {
         return ele.UserID.toString() === UserID;

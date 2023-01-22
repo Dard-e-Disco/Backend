@@ -35,7 +35,12 @@ Router.post(
         id: user.id,
       };
       const authToken = jwt.sign(data, JWT);
-      res.send({ authToken });
+      res.send({ 
+        code:0,
+        message:"user is successfully signin",
+        authToken:authToken,
+        user:user
+       });
     } catch (error) {
       res.status(500).send("Internal server Error");
     }
@@ -72,7 +77,12 @@ Router.post(
         id: user.id,
       };
       const authToken = jwt.sign(data, JWT);
-      res.send({authToken});
+      res.send({ 
+        code:0,
+        message:"user is successfully signin",
+        authToken:authToken,
+        user:user
+       });
     } catch (error) {
       res.status(500).send("Internal server Error");
     }

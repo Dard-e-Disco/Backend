@@ -78,7 +78,7 @@ Router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const event = await Events.findById(EventID);
-      if (event.np) {
+      if (event.npremaining) {
         const newuserreq = event.UserRequested.filter((ele) => {
           return ele.UserID.toString() === UserID;
         });
@@ -136,11 +136,12 @@ Router.post(
           event.UserAccepted.push({
             UserID,
           });
+          event.npremaining = event.npremaining - 1;
           const savedEvent = await event.save();
           res.json({
-            code:0,
-            message:"The user is accpeted for the given Event",
-            result:savedEvent
+            code: 0,
+            message: "The user is accpeted for the given Event",
+            result: savedEvent,
           });
         } else {
           res.status(404).json({
@@ -148,8 +149,7 @@ Router.post(
             message: "The user is already accepted for the given event",
           });
         }
-      }
-      else{
+      } else {
         res.status(404).json({
           code: 1,
           message: "User the rejected for the given event",
@@ -171,19 +171,23 @@ Router.post(
   }
 );
 
-
 //Delete Event
 
-Router.post("/deleteEvent",fetchuser,[
-  body("EventID", "Enter a valid EventID")
-  .isLength({ min: 1 })
-  .isAlphanumeric(),
-],async (req,res)=>{
-    const {EventID}=req.body
-    const event= await Events.findByIdAndDelete(EventID);
+Router.post(
+  "/deleteEvent",
+  fetchuser,
+  [
+    body("EventID", "Enter a valid EventID")
+      .isLength({ min: 1 })
+      .isAlphanumeric(),
+  ],
+  async (req, res) => {
+    const { EventID } = req.body;
+    const event = await Events.findByIdAndDelete(EventID);
     res.json({
-      code:0,
-      message:"Event is successfully deleted",
-    })
-})
+      code: 0,
+      message: "Event is successfully deleted",
+    });
+  }
+);
 module.exports = Router;

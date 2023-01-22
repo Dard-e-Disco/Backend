@@ -27,7 +27,7 @@ Router.post(
   [
     body("EventName", "Enter a valid EventName").isLength({ min: 1 }),
     body("desc", "Description must be atleast 20 characters").isLength({
-      min: 2,
+      min: 20,
     }),
     body("np", "Participants must be a numeric value").isNumeric(),
     body(

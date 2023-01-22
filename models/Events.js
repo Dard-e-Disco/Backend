@@ -11,6 +11,9 @@ const EventSchema = new Schema({
     },
     UserRequested:[{
         UserID:{type:Schema.Types.ObjectId, ref:"user"},
+    }],
+    UserAccepted:[{
+        UserID:{type:Schema.Types.ObjectId, ref:"user"},
     }]
 
 })

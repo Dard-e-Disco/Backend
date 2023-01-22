@@ -8,7 +8,7 @@ const JWT = "Login@userToken";
 
 //creating user
 Router.post(
-  "/signin",
+  "/signup",
   [
     body("name", "Name length should be greater than 2").isLength({ min: 3 }),
     body("email", "enter a valid email").isEmail(),
@@ -37,7 +37,7 @@ Router.post(
       const authToken = jwt.sign(data, JWT);
       res.send({ 
         code:0,
-        message:"user is successfully signin",
+        message:"user is successfully signed up",
         authToken:authToken,
         user:user
        });
@@ -79,7 +79,7 @@ Router.post(
       const authToken = jwt.sign(data, JWT);
       res.send({ 
         code:0,
-        message:"user is successfully signin",
+        message:"user is successfully loged in",
         authToken:authToken,
         user:user
        });

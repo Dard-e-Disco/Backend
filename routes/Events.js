@@ -82,29 +82,31 @@ Router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const event = await Events.findById(EventID);
-      if (event.npremaining) {
-        const newuserreq = event.UserRequested.filter((ele) => {
-          return ele.UserID.toString() === UserID;
-        });
-        console.log(newuserreq);
-        if (newuserreq.length === 0) {
-          event.UserRequested.push({
-            UserID,
-          });
-          const savedEvent = await event.save();
-          res.send(savedEvent);
-        } else {
-          res.status(404).json({
-            code: 1,
-            message: "User already exists in the database",
-          });
-        }
-      } else {
-        res.status(201).json({
-          code: 2,
-          message:
-            "Maximum number of participants is already reached for this event",
-        });
+      if(event.CreatorID.toString()===UserID){
+        if (event.npremaining) {
+            const newuserreq = event.UserRequested.filter((ele) => {
+              return ele.UserID.toString() === UserID;
+            });
+            console.log(newuserreq);
+            if (newuserreq.length === 0) {
+              event.UserRequested.push({
+                UserID,
+              });
+              const savedEvent = await event.save();
+              res.send(savedEvent);
+            } else {
+              res.status(404).json({
+                code: 1,
+                message: "User already exists in the database",
+              });
+            }
+          } else {
+            res.status(201).json({
+              code: 2,
+              message:
+                "Maximum number of participants is already reached for this event",
+            });
+          } 
       }
     } catch (error) {
       res.status(500).send("Internal Server Error");

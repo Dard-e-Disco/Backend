@@ -1,8 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose');
 const startdb = require('./db')
+var cors = require('cors')
 const app = express()
 const port = 5000
+//cors permission
+app.use(cors())
 //starting database
 startdb()
 //json 

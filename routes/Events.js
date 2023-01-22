@@ -51,7 +51,11 @@ Router.post(
         CreatorID,
       });
       const savedEvent = await Event.save();
-      res.json(savedEvent);
+      res.json({
+        code:0,
+        message:"Event is successfully posted",
+        result:savedEvent
+      });
     } catch (error) {
       res.status(500).send("Internal Server Error");
     }
